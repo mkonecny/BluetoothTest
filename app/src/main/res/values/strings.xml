@@ -3,7 +3,8 @@
 
     <string name="app_name">BluetoothTest</string>
     <string name="hello_world">Try pressing the button</string>
-    <string name="button_text">Press Me!</string>
+    <string name="start_text">Start Advertising</string>
+    <string name="stop_text">Stop Advertising</string>
     <string name="action_settings">Settings</string>
 
 </resources>

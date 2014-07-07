@@ -17,7 +17,13 @@
     <Button
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/button_text"
-        android:onClick="handleButtonClick" />
+        android:text="@string/start_text"
+        android:onClick="handleStartClick" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/stop_text"
+        android:onClick="handleStopClick" />
 
 </LinearLayout>
