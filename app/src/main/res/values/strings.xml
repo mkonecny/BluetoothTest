@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">BluetoothTest</string>
+    <string name="hello_world">Try pressing the button</string>
+    <string name="button_text">Press Me!</string>
+    <string name="action_settings">Settings</string>
+
+</resources>
