@@ -10,7 +10,7 @@
     tools:context=".MyActivity">
 
     <TextView
-        android:text="@string/hello_world"
+        android:id="@+id/bluetooth_state_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
@@ -25,5 +25,18 @@
         android:layout_height="wrap_content"
         android:text="@string/stop_text"
         android:onClick="handleStopClick" />
+
+    <Button
+        android:id="@+id/scan_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_text"
+        android:onClick="handleStartScanClick"
+        android:enabled="false" />
+
+    <ListView
+        android:id="@+id/devicesfound"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
