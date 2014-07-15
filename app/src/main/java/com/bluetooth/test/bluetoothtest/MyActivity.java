@@ -131,6 +131,7 @@ public class MyActivity extends Activity {
                 scanning = false;
                 bluetoothAdapter.stopLeScan(leScanCallback);
                 scanButton.setEnabled(!scanning);
+                checkBluetooth();
             }
         }, SCAN_PERIOD);
 
