@@ -31,14 +31,15 @@ public class MyActivity extends Activity {
 
     private static final String TAG = "MyActivity";
     private static final int REQUEST_ENABLE_BT = 1;
-    final byte[] advertisingBytes = new byte[] { //TODO test data based on ibeacon demo
+    final byte[] advertisingBytes = new byte[] {
         (byte) 0x4c, (byte) 0x00,   // Apple manufacturer ID
         (byte) 0x02, (byte) 0x15,   // iBeacon advertisement identifier
         // 16-byte Proximity UUID follows
         (byte) 0x2F, (byte) 0x23, (byte) 0x44, (byte) 0x54, (byte) 0xCF, (byte) 0x6D, (byte) 0x4a, (byte) 0x0F,
         (byte) 0xAD, (byte) 0xF2, (byte) 0xF4, (byte) 0x91, (byte) 0x1B, (byte) 0xA9, (byte) 0xFF, (byte) 0xA6,
         (byte) 0x00, (byte) 0x01,   // major: 1
-        (byte) 0x00, (byte) 0x02 }; // minor: 2
+        (byte) 0x00, (byte) 0x02,
+        (byte) 0xC5 }; // transmitter power calibration value: -59
 
     final byte[] manufacturerData = new byte[] {
             (byte) 0x4c, (byte) 0x00, (byte) 0x02, (byte) 0x15, // fix
@@ -55,7 +56,7 @@ public class MyActivity extends Activity {
 
     final byte mLeManufacturerData[] = { (byte)0x67, (byte)0x00, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07 };
 
-    //BluetoothManager bluetoothManager;
+    BluetoothManager bluetoothManager;
     BluetoothAdapter bluetoothAdapter;
     BluetoothLeAdvertiser bluetoothLeAdvertiser;
 
@@ -111,8 +112,8 @@ public class MyActivity extends Activity {
     }
 
     private void initBluetooth() {
-        //bluetoothManager = (BluetoothManager) this.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothManager = (BluetoothManager) this.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        bluetoothAdapter = bluetoothManager.getAdapter();
         bluetoothLeAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
 
         handler = new Handler();
@@ -200,7 +201,7 @@ public class MyActivity extends Activity {
     public void handleStartClick(View view) {
         //System.out.println("button press registered");
         //Toast.makeText(MyActivity.this, "You pressed it!", Toast.LENGTH_SHORT).show();
-        //startAdvertise();
+        startAdvertise();
     }
 
     public void handleStopClick(View view) {
@@ -216,59 +217,49 @@ public class MyActivity extends Activity {
 
 
         UUID uuid = UUID.randomUUID();
-        //ParcelUuid pUUID = new ParcelUuid(uuid); //test random uuid
-        ParcelUuid pUUID = ParcelUuid.fromString("0000FFFE-0000-1000-8000-00805F9B34FB");
+        ParcelUuid pUUID = new ParcelUuid(uuid); //test random uuid
+        //ParcelUuid pUUID = ParcelUuid.fromString("0000FFFE-0000-1000-8000-00805F9B34FB");
         List<ParcelUuid> parcelArray = new ArrayList<ParcelUuid>();
-        parcelArray.add(pUUID);
+        //parcelArray.add(pUUID);
+
+        parcelArray.add(ParcelUuid.fromString(BleUuid.SERVICE_DEVICE_INFORMATION));
+        parcelArray.add(ParcelUuid.fromString(BleUuid.SERVICE_IMMEDIATE_ALERT));
+
         Log.d(TAG, "Generated UUID: " + uuid.toString());
 
         dataBuilder.setIncludeTxPowerLevel(false); //necessity to fit in 31 byte advertisement
-        dataBuilder.setManufacturerData(0x0067, mLeManufacturerData);
-        dataBuilder.setServiceUuids(parcelArray);
-        dataBuilder.setServiceData(pUUID, new byte[]{});
+
+        dataBuilder.setManufacturerData(0, advertisingBytes);
+
+        //dataBuilder.setServiceUuids(parcelArray);
+        //dataBuilder.setServiceData(pUUID, new byte[]{});
 
         settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED);
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
-        settingsBuilder.setType(AdvertiseSettings.ADVERTISE_TYPE_CONNECTABLE);
+        settingsBuilder.setType(AdvertiseSettings.ADVERTISE_TYPE_NON_CONNECTABLE);
 
         Toast.makeText(MyActivity.this, "Setup complete", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Configuration completed");
-        bluetoothLeAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), startCallback);
+        bluetoothLeAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
     }
 
     private void stopAdvertise() {
-        bluetoothLeAdvertiser.stopAdvertising(stopCallback);
+        bluetoothLeAdvertiser.stopAdvertising(advertiseCallback);
     }
 
-    private AdvertiseCallback startCallback = new AdvertiseCallback() {
+    private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
         public void onSuccess(AdvertiseSettings advertiseSettings) {
-            String successMsg = "Advertisement attempt successful";
-            Toast.makeText(MyActivity.this, successMsg, Toast.LENGTH_SHORT).show();
+            String successMsg = "Advertisement command attempt successful";
+            //Toast.makeText(MyActivity.this, successMsg, Toast.LENGTH_SHORT).show();
             Log.d(TAG, successMsg);
         }
 
         @Override
         public void onFailure(int i) {
-            String failMsg = "Advertisement attempt failed";
-            Toast.makeText(MyActivity.this, failMsg, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, failMsg);
-        }
-    };
-
-    private AdvertiseCallback stopCallback = new AdvertiseCallback() {
-        @Override
-        public void onSuccess(AdvertiseSettings advertiseSettings) {
-            String successMsg = "Stopping advertisement successful";
-            Toast.makeText(MyActivity.this, successMsg, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, successMsg);
-        }
-
-        @Override
-        public void onFailure(int i) {
-            String failMsg = "Stopping advertisement failed";
-            Toast.makeText(MyActivity.this, failMsg, Toast.LENGTH_SHORT).show();
-            Log.d(TAG, failMsg);
+            String failMsg = "Advertisement command attempt failed: " + i;
+            //Toast.makeText(MyActivity.this, failMsg, Toast.LENGTH_SHORT).show();
+            Log.e(TAG, failMsg);
         }
     };
 }
