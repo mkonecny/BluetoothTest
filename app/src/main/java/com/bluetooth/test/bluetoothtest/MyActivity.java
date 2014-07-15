@@ -135,6 +135,7 @@ public class MyActivity extends Activity {
             }
         }, SCAN_PERIOD);
 
+        btArrayAdapter.clear();
         scanning = true;
         bluetoothAdapter.startLeScan(leScanCallback);
         bluetoothState.setText("Bluetooth is currently scanning...");
@@ -147,9 +148,13 @@ public class MyActivity extends Activity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(TAG, "Device: " + bluetoothDevice.getName() + " Scanned!");
-                    btArrayAdapter.add(bluetoothDevice.getName() + "\n" + bluetoothDevice.getAddress());
-                    btArrayAdapter.notifyDataSetChanged();
+                    String deviceInfo = bluetoothDevice.getName() + " - " + bluetoothDevice.getAddress();
+                    Log.d(TAG, "Device: " + deviceInfo + " Scanned!");
+                    //TODO currently scan yields rapid repeats of same device when found
+                    if(btArrayAdapter.getPosition(deviceInfo) == -1) {
+                        btArrayAdapter.add(deviceInfo);
+                        btArrayAdapter.notifyDataSetChanged();
+                    }
                 }
             });
         }
