@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.Menu;
@@ -57,6 +58,10 @@ public class MyActivity extends Activity {
     //BluetoothManager bluetoothManager;
     BluetoothAdapter bluetoothAdapter;
     BluetoothLeAdvertiser bluetoothLeAdvertiser;
+
+    private Handler handler;
+    private boolean scanning;
+    private static final long SCAN_PERIOD = 10000;
 
     Button scanButton;
     TextView bluetoothState;
@@ -109,7 +114,45 @@ public class MyActivity extends Activity {
         //bluetoothManager = (BluetoothManager) this.getApplicationContext().getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothLeAdvertiser = bluetoothAdapter.getBluetoothLeAdvertiser();
+
+        handler = new Handler();
     }
+
+    public void LeScanStart(View view) {
+        checkBluetooth();
+        if(!bluetoothAdapter.isEnabled()) {
+            return;
+        }
+
+        // Stops scanning after a pre-defined scan period.
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                scanning = false;
+                bluetoothAdapter.stopLeScan(leScanCallback);
+                scanButton.setEnabled(!scanning);
+            }
+        }, SCAN_PERIOD);
+
+        scanning = true;
+        bluetoothAdapter.startLeScan(leScanCallback);
+        bluetoothState.setText("Bluetooth is currently scanning...");
+        scanButton.setEnabled(!scanning);
+    }
+
+    private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
+        @Override
+        public void onLeScan(final BluetoothDevice bluetoothDevice, int i, byte[] bytes) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "Device: " + bluetoothDevice.getName() + " Scanned!");
+                    btArrayAdapter.add(bluetoothDevice.getName() + "\n" + bluetoothDevice.getAddress());
+                    btArrayAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    };
 
     public void handleStartScanClick(View view) {
         btArrayAdapter.clear();
@@ -151,7 +194,7 @@ public class MyActivity extends Activity {
     public void handleStartClick(View view) {
         //System.out.println("button press registered");
         //Toast.makeText(MyActivity.this, "You pressed it!", Toast.LENGTH_SHORT).show();
-        startAdvertise();
+        //startAdvertise();
     }
 
     public void handleStopClick(View view) {

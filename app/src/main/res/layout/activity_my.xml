@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/scan_text"
-        android:onClick="handleStartScanClick"
+        android:onClick="LeScanStart"
         android:enabled="false" />
 
     <ListView
