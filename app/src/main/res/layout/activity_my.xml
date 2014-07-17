@@ -15,23 +15,35 @@
         android:layout_height="wrap_content" />
 
     <Button
+        android:id="@+id/adv_start_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/start_text"
-        android:onClick="handleStartClick" />
+        android:onClick="handleStartClick"
+        android:enabled="true"/>
 
     <Button
+        android:id="@+id/adv_stop_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/stop_text"
-        android:onClick="handleStopClick" />
+        android:onClick="handleStopClick"
+        android:enabled="false"/>
 
     <Button
         android:id="@+id/scan_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/scan_text"
-        android:onClick="LeScanStart"
+        android:onClick="handleScanStart"
+        android:enabled="true" />
+
+    <Button
+        android:id="@+id/scan_stop_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_stop_text"
+        android:onClick="handleScanStop"
         android:enabled="false" />
 
     <ListView
