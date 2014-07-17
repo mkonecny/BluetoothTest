@@ -123,13 +123,17 @@ public class MyActivity extends Activity {
             foundDevices.add(device.getAddress());
             String deviceInfo = device.getName() + " - " + device.getAddress();
             Log.d(TAG, "Device: " + deviceInfo + " Scanned!");
-            ParcelUuid[] uuids = device.getUuids();
+            //TODO use ScanRecord to retrieve more data
+            ScanRecord scanRecord = ScanRecord.parseFromBytes(scanResult.getScanRecord());
+            List<ParcelUuid> uuids = scanRecord.getServiceUuids();
+
             if(uuids != null) {
-                Log.d(TAG, "UUIDS FOUND ON FOUND DEVICE!");
-                for(int i = 0; i < uuids.length; i++) {
-                    deviceInfo += "\n   " + uuids[i].toString();
+                Log.d(TAG, "UUIDS FOUND FROM DEVICE");
+                for(int i = 0; i < uuids.size(); i++) {
+                    deviceInfo += "\n" + uuids.get(i).toString();
                 }
             }
+
             final String text = deviceInfo;
             runOnUiThread(new Runnable() {
                 @Override
