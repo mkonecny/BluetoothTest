@@ -111,7 +111,7 @@ public class BluetoothUtility {
 
         startGattServer();
 
-        AdvertisementData.Builder dataBuilder = new AdvertisementData.Builder();
+        AdvertiseData.Builder dataBuilder = new AdvertiseData.Builder();
         AdvertiseSettings.Builder settingsBuilder = new AdvertiseSettings.Builder();
 
         //UUID uuid = UUID.randomUUID();
@@ -127,12 +127,15 @@ public class BluetoothUtility {
 
         //dataBuilder.setManufacturerData(0, advertisingBytes);
 
-        dataBuilder.setServiceUuids(serviceUuids);
+        for (ParcelUuid pu: serviceUuids) {
+            dataBuilder.addServiceUuid(pu);
+        }
+        
         //dataBuilder.setServiceData(pUUID, new byte[]{});
 
         settingsBuilder.setAdvertiseMode(AdvertiseSettings.ADVERTISE_MODE_BALANCED);
         settingsBuilder.setTxPowerLevel(AdvertiseSettings.ADVERTISE_TX_POWER_HIGH);
-        settingsBuilder.setType(AdvertiseSettings.ADVERTISE_TYPE_CONNECTABLE);
+        settingsBuilder.setConnectable(true);
 
         bluetoothLeAdvertiser.startAdvertising(settingsBuilder.build(), dataBuilder.build(), advertiseCallback);
         advertising = true;

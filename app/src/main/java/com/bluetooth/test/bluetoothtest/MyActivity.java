@@ -117,14 +117,14 @@ public class MyActivity extends Activity {
     //TODO currently scan yields rapid repeats of same device when found
     private ScanCallback scanCallback = new ScanCallback() {
         @Override
-        public void onAdvertisementUpdate(ScanResult scanResult) {
+        public void onScanResult(int callbackType, ScanResult scanResult) {
             BluetoothDevice device = scanResult.getDevice();
             if(foundDevices.contains(device.getAddress())) return;
             foundDevices.add(device.getAddress());
             String deviceInfo = device.getName() + " - " + device.getAddress();
             Log.d(TAG, "Device: " + deviceInfo + " Scanned!");
             //TODO use ScanRecord to retrieve more data
-            ScanRecord scanRecord = ScanRecord.parseFromBytes(scanResult.getScanRecord());
+            ScanRecord scanRecord = scanResult.getScanRecord();
             List<ParcelUuid> uuids = scanRecord.getServiceUuids();
 
             if(uuids != null) {
@@ -195,13 +195,13 @@ public class MyActivity extends Activity {
 
     private AdvertiseCallback advertiseCallback = new AdvertiseCallback() {
         @Override
-        public void onSuccess(AdvertiseSettings advertiseSettings) {
+        public void onStartSuccess(AdvertiseSettings advertiseSettings) {
             String successMsg = "Advertisement command attempt successful";
             Log.d(TAG, successMsg);
         }
 
         @Override
-        public void onFailure(int i) {
+        public void onStartFailure(int i) {
             String failMsg = "Advertisement command attempt failed: " + i;
             Log.e(TAG, failMsg);
         }
